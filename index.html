@@ -132,6 +132,11 @@
             </div>
         </div>
 
+        <!-- BANNER TENGAH / PROMO DINAMIS (TAMBAHAN BARU) -->
+        <div id="midBannerContainer" class="hidden mb-6 rounded-2xl overflow-hidden shadow-sm w-full relative group cursor-pointer hover:shadow-md transition-all">
+            <img id="midBannerImg" src="" class="w-full h-auto max-h-48 sm:max-h-64 object-cover transform group-hover:scale-[1.02] transition-transform duration-500">
+        </div>
+
         <!-- KATEGORI FILTER -->
         <div id="categoryFilterContainer" class="flex overflow-x-auto gap-2 mb-6 pb-2 hide-scrollbar snap-x hidden">
             <!-- Diisi dari JS -->
@@ -429,6 +434,7 @@
         var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby4ESiS1p72T03EOLfjlcrybMeC10SjwfOywcZXF-6yvMyaIjrhUPXDGA-uo59Un_LS/exec';
 
         let storeData = {};
+        let appSettings = {}; // Tambahan Variabel Global Banner
         let products = [];
         let globalCategories = [];
         let globalShipping = [];
@@ -467,6 +473,7 @@
                     products = res.products;
                     globalCategories = res.categories || [];
                     globalShipping = res.shipping_rates || [];
+                    appSettings = res.app_settings || {}; // Tangkap data App Settings
                     buildStoreUI();
                 } else {
                     showLoaderError("Gagal memuat data katalog. Pastikan setting Google Sheet benar.");
@@ -498,6 +505,16 @@
             if (storeData.banner_url) {
                 document.getElementById('storeBannerImg').src = storeData.banner_url;
                 document.getElementById('storeBanner').classList.remove('hidden');
+            }
+
+            // BANNER TENGAH (PROMO) DINAMIS
+            if (appSettings.show_banner_mid === 'on' && appSettings.banner_mid_image && appSettings.banner_mid_image.trim() !== '') {
+                const midBannerContainer = document.getElementById('midBannerContainer');
+                const midBannerImg = document.getElementById('midBannerImg');
+                if (midBannerContainer && midBannerImg) {
+                    midBannerImg.src = appSettings.banner_mid_image;
+                    midBannerContainer.classList.remove('hidden');
+                }
             }
 
             // FITUR TEKS BERJALAN (ANNOUNCEMENT BAR)
