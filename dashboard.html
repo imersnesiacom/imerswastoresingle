@@ -977,114 +977,117 @@
         let globalProducts = [], globalOrders = [], globalUsers = [], globalCategories = [], globalCoupons = [], globalShipping = [];
         let appSettings = {};
         let cart = [];
+        let targetStoreId = null;
         let posSubtotal = 0, posOngkirCost = 0, posDiskonVal = 0, posPpnVal = 0, posServiceVal = 0, posGrandTotal = 0;
         let salesChartInstance = null, topProductsChartInstance = null;
 
         async function initApp() {
-            if (!currentUser) return; 
-            
-            document.title = `Dashboard - ${currentUser.nama_toko || 'Panel Admin'}`;
-            document.getElementById('headerDate').innerText = new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-            document.getElementById('uiTokoName').innerText = currentUser.nama_toko || 'Nama Toko';
-            document.getElementById('uiUsername').innerText = '@' + currentUser.username;
-            document.getElementById('welcomeName').innerText = currentUser.username;
-            document.getElementById('uiRoleBadge').innerText = currentUser.role;
+    if (!currentUser) return; 
+    
+    // Inisialisasi variabel global agar bisa dipakai di fungsi submit form
+    targetStoreId = currentUser.id; 
 
-            const sidebarBrandNameEl = document.getElementById('sidebarBrandName');
-            const sidebarBrandLogoEl = document.getElementById('sidebarBrandLogo');
-            sidebarBrandNameEl.innerText = currentUser.nama_toko || 'iMersWAstore';
+    document.title = `Dashboard - ${currentUser.nama_toko || 'Panel Admin'}`;
+    document.getElementById('headerDate').innerText = new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    document.getElementById('uiTokoName').innerText = currentUser.nama_toko || 'Nama Toko';
+    document.getElementById('uiUsername').innerText = '@' + currentUser.username;
+    document.getElementById('welcomeName').innerText = currentUser.username;
+    document.getElementById('uiRoleBadge').innerText = currentUser.role;
 
-            if (currentUser.logo && currentUser.logo !== '') {
-                sidebarBrandLogoEl.innerHTML = `<img src="${currentUser.logo}" class="w-8 h-8 object-cover rounded">`;
-                sidebarBrandNameEl.classList.remove('hidden'); 
-            } else {
-                sidebarBrandNameEl.classList.remove('hidden');
-            }
+    const sidebarBrandNameEl = document.getElementById('sidebarBrandName');
+    const sidebarBrandLogoEl = document.getElementById('sidebarBrandLogo');
+    sidebarBrandNameEl.innerText = currentUser.nama_toko || 'iMersWAstore';
 
-            const avatarEl = document.getElementById('uiAvatar');
-            if (currentUser.logo && currentUser.logo !== '') {
-                avatarEl.innerHTML = `<img src="${currentUser.logo}" class="w-full h-full object-cover">`;
-            } else {
-                avatarEl.innerHTML = (currentUser.nama_toko || 'U').charAt(0);
-            }
+    if (currentUser.logo && currentUser.logo !== '') {
+        sidebarBrandLogoEl.innerHTML = `<img src="${currentUser.logo}" class="w-8 h-8 object-cover rounded">`;
+        sidebarBrandNameEl.classList.remove('hidden'); 
+    } else {
+        sidebarBrandNameEl.classList.remove('hidden');
+    }
 
-            const badge = document.getElementById('statusBadge');
-            if (badge) {
-                badge.classList.remove('hidden');
-                if (currentUser.status === 'approved') {
-                    badge.innerText = 'Toko Aktif'; 
-                    badge.classList.add('bg-green-100', 'text-green-700');
-                } else {
-                    badge.innerText = 'Pending'; 
-                    badge.classList.add('bg-amber-100', 'text-amber-700');
-                }
-            }
+    const avatarEl = document.getElementById('uiAvatar');
+    if (currentUser.logo && currentUser.logo !== '') {
+        avatarEl.innerHTML = `<img src="${currentUser.logo}" class="w-full h-full object-cover">`;
+    } else {
+        avatarEl.innerHTML = (currentUser.nama_toko || 'U').charAt(0);
+    }
 
-            document.getElementById('btnLihatToko').onclick = () => window.open('index.html', '_blank');
-
-            // Set Data Form Profil
-            const fields = ['setNamaToko','setLogo','setWaNumber','setAutoReply','setQris','setBank','setGatewayProvider','setGatewayToken','setGatewaySender','setSecretStatus','setSecretTap','setSecretPin','setBannerUrl','setThemeColor','setAnnouncementText','setAnnouncementLink','setPixelFB','setPixelTikTok','setPixelGoogle'];
-            fields.forEach(f => {
-                let key = f.replace('set', '');
-                key = key.charAt(0).toLowerCase() + key.slice(1);
-                if (key === 'namaToko') key = 'nama_toko';
-                if (key === 'waNumber') key = 'wa_number';
-                if (key === 'autoReply') key = 'auto_reply';
-                if (key === 'qris') key = 'qris_url';
-                if (key === 'bank') key = 'bank_info';
-                if (key === 'gatewayProvider') key = 'gateway_provider';
-                if (key === 'gatewayToken') key = 'gateway_token';
-                if (key === 'gatewaySender') key = 'gateway_sender';
-                if (key === 'secretStatus') key = 'secret_login_status';
-                if (key === 'secretTap') key = 'secret_tap_count';
-                if (key === 'secretPin') key = 'secret_pin';
-                if (key === 'bannerUrl') key = 'banner_url';
-                if (key === 'themeColor') key = 'theme_color';
-                if (key === 'announcementText') key = 'announcement_text';
-                if (key === 'announcementLink') key = 'announcement_link';
-                if (key === 'pixelFB') key = 'pixel_fb';
-                if (key === 'pixelTikTok') key = 'pixel_tiktok';
-                if (key === 'pixelGoogle') key = 'pixel_google';
-                if(document.getElementById(f)) document.getElementById(f).value = currentUser[key] || (f==='setThemeColor'?'#f8fafc':(f==='setSecretTap'?'5':''));
-            });
-
-            let taxData = {};
-            try { if(currentUser.tax_settings) taxData = JSON.parse(currentUser.tax_settings); } catch(e) {}
-            if (document.getElementById('setTaxPPN')) document.getElementById('setTaxPPN').value = taxData.ppn || '';
-            if (document.getElementById('setTaxService')) document.getElementById('setTaxService').value = taxData.service || '';
-
-            const tutContainer = document.getElementById('tutorialInputsContainer');
-            if(tutContainer) tutContainer.innerHTML = ''; 
-            let tutData = [];
-            try { if(currentUser.tutorial_data) tutData = JSON.parse(currentUser.tutorial_data); } catch(e) {}
-            if (currentUser.role === 'admin') {
-                if(tutData.length === 0 && tutContainer) addTutorialInput(); 
-                else if(tutContainer) tutData.forEach(link => addTutorialInput(link));
-                renderTutorialPlaylist(tutData);
-            }
-
-            const smContainer = document.getElementById('socialMediaContainer');
-            if(smContainer) smContainer.innerHTML = '';
-            let smData = [];
-            try { if(currentUser.social_media) smData = JSON.parse(currentUser.social_media); } catch(e) {}
-            if(smData.length > 0 && smContainer) smData.forEach(item => addSocialMediaInput(item.platform, item.url));
-
-            let notifData = {}, legalData = {};
-            try { if(currentUser.notif_templates) notifData = JSON.parse(currentUser.notif_templates); } catch(e) {}
-            try { if(currentUser.legal_settings) legalData = JSON.parse(currentUser.legal_settings); } catch(e) {}
-
-            if(document.getElementById('setNotifCheckout')) document.getElementById('setNotifCheckout').value = notifData.checkout_msg || '';
-            if(document.getElementById('setTosActive')) document.getElementById('setTosActive').value = legalData.tos_active || 'off';
-            if(document.getElementById('setTosContent')) document.getElementById('setTosContent').value = legalData.tos_content || '';
-            if(document.getElementById('setPrivacyActive')) document.getElementById('setPrivacyActive').value = legalData.privacy_active || 'off';
-            if(document.getElementById('setPrivacyContent')) document.getElementById('setPrivacyContent').value = legalData.privacy_content || '';
-
-            await fetchGlobalSettings();
-            fetchDashboardData();
-            
-            if (currentUser.role === 'admin') fetchUsersData();
+    const badge = document.getElementById('statusBadge');
+    if (badge) {
+        badge.classList.remove('hidden');
+        if (currentUser.status === 'approved') {
+            badge.innerText = 'Toko Aktif'; 
+            badge.classList.add('bg-green-100', 'text-green-700');
+        } else {
+            badge.innerText = 'Pending'; 
+            badge.classList.add('bg-amber-100', 'text-amber-700');
         }
+    }
 
+    document.getElementById('btnLihatToko').onclick = () => window.open('index.html', '_blank');
+
+    // Set Data Form Profil
+    const fields = ['setNamaToko','setLogo','setWaNumber','setAutoReply','setQris','setBank','setGatewayProvider','setGatewayToken','setGatewaySender','setSecretStatus','setSecretTap','setSecretPin','setBannerUrl','setThemeColor','setAnnouncementText','setAnnouncementLink','setPixelFB','setPixelTikTok','setPixelGoogle'];
+    fields.forEach(f => {
+        let key = f.replace('set', '');
+        key = key.charAt(0).toLowerCase() + key.slice(1);
+        if (key === 'namaToko') key = 'nama_toko';
+        if (key === 'waNumber') key = 'wa_number';
+        if (key === 'autoReply') key = 'auto_reply';
+        if (key === 'qris') key = 'qris_url';
+        if (key === 'bank') key = 'bank_info';
+        if (key === 'gatewayProvider') key = 'gateway_provider';
+        if (key === 'gatewayToken') key = 'gateway_token';
+        if (key === 'gatewaySender') key = 'gateway_sender';
+        if (key === 'secretStatus') key = 'secret_login_status';
+        if (key === 'secretTap') key = 'secret_tap_count';
+        if (key === 'secretPin') key = 'secret_pin';
+        if (key === 'bannerUrl') key = 'banner_url';
+        if (key === 'themeColor') key = 'theme_color';
+        if (key === 'announcementText') key = 'announcement_text';
+        if (key === 'announcementLink') key = 'announcement_link';
+        if (key === 'pixelFB') key = 'pixel_fb';
+        if (key === 'pixelTikTok') key = 'pixel_tiktok';
+        if (key === 'pixelGoogle') key = 'pixel_google';
+        if(document.getElementById(f)) document.getElementById(f).value = currentUser[key] || (f==='setThemeColor'?'#f8fafc':(f==='setSecretTap'?'5':''));
+    });
+
+    let taxData = {};
+    try { if(currentUser.tax_settings) taxData = JSON.parse(currentUser.tax_settings); } catch(e) {}
+    if (document.getElementById('setTaxPPN')) document.getElementById('setTaxPPN').value = taxData.ppn || '';
+    if (document.getElementById('setTaxService')) document.getElementById('setTaxService').value = taxData.service || '';
+
+    const tutContainer = document.getElementById('tutorialInputsContainer');
+    if(tutContainer) tutContainer.innerHTML = ''; 
+    let tutData = [];
+    try { if(currentUser.tutorial_data) tutData = JSON.parse(currentUser.tutorial_data); } catch(e) {}
+    if (currentUser.role === 'admin') {
+        if(tutData.length === 0 && tutContainer) addTutorialInput(); 
+        else if(tutContainer) tutData.forEach(link => addTutorialInput(link));
+        renderTutorialPlaylist(tutData);
+    }
+
+    const smContainer = document.getElementById('socialMediaContainer');
+    if(smContainer) smContainer.innerHTML = '';
+    let smData = [];
+    try { if(currentUser.social_media) smData = JSON.parse(currentUser.social_media); } catch(e) {}
+    if(smData.length > 0 && smContainer) smData.forEach(item => addSocialMediaInput(item.platform, item.url));
+
+    let notifData = {}, legalData = {};
+    try { if(currentUser.notif_templates) notifData = JSON.parse(currentUser.notif_templates); } catch(e) {}
+    try { if(currentUser.legal_settings) legalData = JSON.parse(currentUser.legal_settings); } catch(e) {}
+
+    if(document.getElementById('setNotifCheckout')) document.getElementById('setNotifCheckout').value = notifData.checkout_msg || '';
+    if(document.getElementById('setTosActive')) document.getElementById('setTosActive').value = legalData.tos_active || 'off';
+    if(document.getElementById('setTosContent')) document.getElementById('setTosContent').value = legalData.tos_content || '';
+    if(document.getElementById('setPrivacyActive')) document.getElementById('setPrivacyActive').value = legalData.privacy_active || 'off';
+    if(document.getElementById('setPrivacyContent')) document.getElementById('setPrivacyContent').value = legalData.privacy_content || '';
+
+    await fetchGlobalSettings();
+    fetchDashboardData();
+    
+    if (currentUser.role === 'admin') fetchUsersData();
+}
         function renderNavigation() {
             const navMenu = document.getElementById('navMenu');
             let menus = '';
