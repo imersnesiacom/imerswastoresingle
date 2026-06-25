@@ -686,16 +686,32 @@
                     </div>
                     <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Satuan</label>
-                            <input type="text" id="prodUnit" list="unitList" required class="w-full px-3 py-2 border rounded-lg text-sm" placeholder="Pcs/Box">
-                            <datalist id="unitList"><option value="Pcs"><option value="Box"><option value="Pack"><option value="Lusin"><option value="Porsi"><option value="Gram"><option value="Kg"></datalist>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Satuan Produk <span class="text-red-500">*</span></label>
+                                <input type="text" id="prodUnit" list="unitList" required class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-emerald-500 bg-slate-50 focus:bg-white transition-colors" placeholder="Pilih / Ketik bebas...">
+                                <datalist id="unitList">
+                                    <option value="Pcs">
+                                    <option value="Box">
+                                    <option value="Pack">
+                                    <option value="Lusin">
+                                    <option value="Porsi">
+                                    <option value="Gram">
+                                    <option value="Kg">
+                                </datalist>
+                            </div>
+                            
+                            <!-- Badge Opsional (Datalist Hybrid) -->
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Badge (Opsional)</label>
+                                <input type="text" id="prodBadge" list="badgeList" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-emerald-500 bg-slate-50 focus:bg-white transition-colors" placeholder="Pilih / Ketik bebas...">
+                                <datalist id="badgeList">
+                                    <option value="Terlaris">
+                                    <option value="Promo">
+                                    <option value="Diskon">
+                                    <option value="Pre-Order">
+                                    <option value="Terbatas">
+                                </datalist>
+                            </div>
                         </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Badge (Opsional)</label>
-                            <input type="text" id="prodBadge" list="badgeList" class="w-full px-3 py-2 border rounded-lg text-sm" placeholder="Terlaris/Promo">
-                            <datalist id="badgeList"><option value="Terlaris"><option value="Promo"><option value="Diskon"></datalist>
-                        </div>
-                    </div>
                     <div>
                         <label class="block text-xs font-medium text-slate-700 mb-1">URL Gambar (Opsional)</label>
                         <input type="url" id="prodImg" class="w-full px-3 py-2 border rounded-lg text-sm">
