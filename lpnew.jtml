@@ -603,7 +603,7 @@
 
                     <!-- DUA TOMBOL BARU DITAMBAHKAN DI SINI -->
                     <div class="mt-4 flex flex-col gap-3">
-                        <a href="https://ai.imersnesia.com/jualanplusstore/" class="flex items-center justify-center w-full py-3 px-4 bg-slate-800 text-white text-sm font-semibold text-center rounded-xl hover:bg-slate-700 transition-colors border border-slate-700">
+                        <a href="https://jpstore.partner.web.id/" class="flex items-center justify-center w-full py-3 px-4 bg-slate-800 text-white text-sm font-semibold text-center rounded-xl hover:bg-slate-700 transition-colors border border-slate-700">
                             <i data-lucide="globe" class="w-4 h-4 mr-2 text-slate-400"></i> Preview Custom Domain
                         </a>
                         <a href="https://imerswastoresingle.vercel.app/" class="flex items-center justify-center w-full py-3 px-4 bg-transparent text-slate-400 text-sm font-semibold text-center rounded-xl hover:text-white hover:bg-slate-800 transition-colors border border-slate-700">
